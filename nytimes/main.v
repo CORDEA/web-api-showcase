@@ -70,6 +70,20 @@ struct Keyword {
 }
 
 struct Byline {
+	original     string
+	person       []Person
+	organization string
+}
+
+struct Person {
+	firstname    string
+	middlename   string
+	lastname     string
+	qualifier    string
+	title        string
+	role         string
+	organization string
+	rank         int
 }
 
 fn main() {
