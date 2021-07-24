@@ -41,4 +41,11 @@ fn run(cmd cli.Command) ? {
 	url.path = path
 	url.raw_query = 'function=$function&symbol=$symbol&interval=$interval&apikey=$key'
 	println(url.str())
+
+	r := http.get(url.str()) or { panic('Failed to fetch.') }
+	if r.status_code != 200 {
+		panic('Failed to fetch. $r.status_code')
+	}
+
+	print(r.text)
 }
