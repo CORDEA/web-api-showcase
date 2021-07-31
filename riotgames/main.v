@@ -1,10 +1,40 @@
 import os
+import json
 import net.http
 import net.urllib
 
 const base_url = 'https://jp1.api.riotgames.com'
 
 const path = '/tft/league/v1/challenger'
+
+struct Leagues {
+	league_id string       [json: 'leagueId']
+	entries   []LeagueItem
+	tier      string
+	name      string
+	queue     string
+}
+
+struct LeagueItem {
+	fresh_blood   bool       [json: 'freshBlood']
+	wins          int
+	summoner_name string     [json: 'summonerName']
+	mini_series   MiniSeries [json: 'miniSeries']
+	inactive      bool
+	veteran       bool
+	hot_streak    bool       [json: 'hotStreak']
+	rank          string
+	league_points int        [json: 'leaguePoints']
+	losses        int
+	summoner_id   string     [json: 'summonerId']
+}
+
+struct MiniSeries {
+	losses   int
+	progress string
+	target   int
+	wins     int
+}
 
 fn main() {
 	key := os.getenv('API_KEY')
@@ -21,5 +51,6 @@ fn main() {
 		panic('Failed to fetch. $r.status_code')
 	}
 
-	println(r.text)
+	data := json.decode(Leagues, r.text) or { panic('Failed to parse response.') }
+	println(data)
 }
