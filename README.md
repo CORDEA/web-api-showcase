@@ -7,3 +7,7 @@
 ### Stock
 
 - [Alpha Vantage](./alphavantage)
+
+### Game
+
+- [Riot Games](./riotgames)
