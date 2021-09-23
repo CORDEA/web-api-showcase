@@ -7,6 +7,20 @@ const base_url = 'https://api.igdb.com'
 
 const path = '/v4/games'
 
+struct Game {
+	name         string
+	artworks     []int
+	franchise    int
+	franchises   []int
+	game_engines []int
+	rating       f32
+	rating_count int
+	summary      string
+	created_at   int
+	updated_at   int
+	url          string
+}
+
 fn authenticate(id string, secret string) string {
 	mut url := urllib.parse('https://id.twitch.tv') or { panic('Failed to parse the url.') }
 	url.path = '/oauth2/token'
@@ -41,4 +55,7 @@ fn main() {
 	if r.status_code != 200 {
 		panic('Failed to fetch. $r.status_code')
 	}
+
+	data := json.decode([]Game, r.text) or { panic('Failed to parse response.') }
+	println(data)
 }
