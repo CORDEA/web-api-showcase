@@ -24,4 +24,21 @@ fn main() {
 	id := os.getenv('CLIENT_ID')
 	secret := os.getenv('CLIENT_SECRET')
 	token := authenticate(id, secret)
+
+	mut url := urllib.parse(base_url) or { panic('Failed to parse the url.') }
+	url.path = path
+	println(url.str())
+
+	mut h := http.new_header()
+	h.add_custom('Client-ID', id) or { panic('Failed to add header.') }
+	h.add_custom('Authorization', 'Bearer $token') or { panic('Failed to add header.') }
+	body := 'fields name,artworks,franchise,franchises,game_engines,rating,rating_count,summary,created_at,updated_at,url; limit 10;'
+	r := http.fetch(url.str(), http.FetchConfig{
+		method: .post
+		data: body
+		header: h
+	}) or { panic('Failed to fetch.') }
+	if r.status_code != 200 {
+		panic('Failed to fetch. $r.status_code')
+	}
 }
