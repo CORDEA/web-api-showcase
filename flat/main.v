@@ -2,10 +2,22 @@ import cli
 import os
 import net.http
 import net.urllib
+import json
 
 const base_url = 'https://api.flat.io'
 
 const path = '/v2/scores'
+
+struct Score {
+	id          string
+	title       string
+	html_url    string [json: 'htmlUrl']
+	subtitle    string
+	lyricist    string
+	arranger    string
+	composer    string
+	description string
+}
 
 fn main() {
 	mut cmd := cli.Command{
@@ -37,4 +49,7 @@ fn run(cmd cli.Command) ? {
 	if r.status_code != 200 {
 		panic('Failed to fetch. $r.status_code')
 	}
+
+	data := json.decode(Score, r.text) or { panic('Failed to parse response.') }
+	println(data)
 }
