@@ -1,3 +1,4 @@
+import cli
 import os
 import net.http
 import net.urllib
@@ -7,10 +8,24 @@ const base_url = 'https://api.flat.io'
 const path = '/v2/scores'
 
 fn main() {
+	mut cmd := cli.Command{
+		name: 'flat'
+		execute: run
+	}
+	cmd.add_flag(cli.Flag{
+		flag: .string
+		required: true
+		name: 'id'
+	})
+	cmd.setup()
+	cmd.parse(os.args)
+}
+
+fn run(cmd cli.Command) ? {
 	token := os.getenv('API_TOKEN')
 
 	mut url := urllib.parse(base_url) or { panic('Failed to parse the url.') }
-	url.path = path
+	url.path = path + '/' + cmd.flags.get_string('id') or { panic('ID is required.') }
 	println(url.str())
 
 	mut h := http.new_header()
