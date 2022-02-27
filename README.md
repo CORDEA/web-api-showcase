@@ -15,4 +15,5 @@
 
 ### Music
 
+- [Spotify](./spotify)
 - [Flat](./flat)
