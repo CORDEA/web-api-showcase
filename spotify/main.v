@@ -8,7 +8,7 @@ const authorize_url = 'https://accounts.spotify.com/authorize'
 
 const token_url = 'https://accounts.spotify.com/api/token'
 
-const base_url = 'https://api.spotify.com/v1'
+const base_url = 'https://api.spotify.com'
 
 const redirect_url = 'http://localhost'
 
@@ -18,6 +18,17 @@ struct AccessToken {
 	access_token string
 	token_type   string
 	scope        string
+}
+
+struct User {
+	country      string
+	display_name string
+	email        string
+	href         string
+	id           string
+	product      string
+	typ          string [json: 'type']
+	uri          string
 }
 
 fn main() {
@@ -44,7 +55,7 @@ fn main() {
 		'redirect_uri': redirect_url
 		'grant_type':   'authorization_code'
 	})
-	r := http.fetch(
+	mut r := http.fetch(
 		method: .post
 		url: url.str()
 		data: body
@@ -54,6 +65,22 @@ fn main() {
 		panic('Failed to fetch. $r.status_code')
 	}
 
-	data := json.decode(AccessToken, r.text) or { panic('Failed to parse response.') }
+	token := json.decode(AccessToken, r.text) or { panic('Failed to parse response.') }
+
+	url = urllib.parse(base_url) or { panic('Failed to parse the url.') }
+	url.path = '/v1/me'
+	h = http.new_header()
+	h.add_custom('Authorization', 'Bearer $token.access_token') or {
+		panic('Failed to add header.')
+	}
+	r = http.fetch(
+		url: url.str()
+		header: h
+	) or { panic('Failed to fetch.') }
+	if r.status_code != 200 {
+		panic('Failed to fetch. $r.status_code')
+	}
+
+	data := json.decode(User, r.text) or { panic('Failed to parse response.') }
 	println(data)
 }
